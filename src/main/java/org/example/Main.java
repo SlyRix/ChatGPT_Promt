@@ -31,7 +31,6 @@ class Main
 
     public static void main(String... args) throws InterruptedException
     {
-
         String token = "ZgiXRZupInt7HlViV75XsJXqzVnMLv_7NXSjS1sDvn6cfHfHFWXkDAGVOPYLenMWdqK6pA.;sidts-CjEBSAxbGb3wO-rlV6T6xS5pxzy7VXJe0F7GgV5_IfUMQ72PMJ5fQY3c6NwcYbgnQ8xdEAA";
 //        AIClient client = new GoogleBardClient(token);
         //        openAiChat(TOKEN);
@@ -61,23 +60,27 @@ class Main
             JSONArray timeFrame = (JSONArray) jsonObject.get("TimeFrame");
             StringBuilder prompt = new StringBuilder();
             prompt.append("Supplier: " + jsonObject.get("SupplierID") + "\n");
+            // ADD Location
+            prompt.append("Lat:" + jsonObject.get("SupplierLat") + ", Lon:" + jsonObject.get("SupplierLon") + "\n");
+//            // ADD Skills
             prompt.append("Skills:");
             for (int j = 0; j < skills.size(); j++)
             {
                 JSONObject skill = (JSONObject) skills.get(j);
-                prompt.append("\n  Skill Name "+skill.get("Skill_NAME") + "\n");
-                prompt.append("  Skill Level "+skill.get("Skill_LEVEL") + "");
+                prompt.append("\n  Skill Name: "+skill.get("Skill_NAME") + " -");
+                prompt.append("Skill Level: "+skill.get("Skill_LEVEL") + "");
             }
             prompt.append("\n");
-            prompt.append("TimeFrame:");
-            for (int j = 0; j < timeFrame.size(); j++)
-            {
-                JSONObject time = (JSONObject) timeFrame.get(j);
-                prompt.append("\n  Start Date: "+time.get("TimeFrameStartDate") + "\n");
-                prompt.append("  End Date: "+time.get("TimeFrameEndDate") + "\n");
-                prompt.append("  Start Time: "+time.get("TimeFrameStartTime") + "\n");
-                prompt.append("  End Time: "+time.get("TimeFrameEndTime") + "");
-            }
+//            // ADD TimeFrame
+//            prompt.append("TimeFrame:");
+//            for (int j = 0; j < timeFrame.size(); j++)
+//            {
+//                JSONObject time = (JSONObject) timeFrame.get(j);
+//                prompt.append("\n  Start Date: "+time.get("TimeFrameStartDate") + "\n");
+//                prompt.append("  End Date: "+time.get("TimeFrameEndDate") + "\n");
+//                prompt.append("  Start Time: "+time.get("TimeFrameStartTime") + "\n");
+//                prompt.append("  End Time: "+time.get("TimeFrameEndTime") + "");
+//            }
             prompts[i] = prompt.toString();
         }
 
