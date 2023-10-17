@@ -9,6 +9,7 @@ import com.theokanning.openai.completion.chat.ChatMessageRole;
 import com.theokanning.openai.service.OpenAiService;
 import com.theokanning.openai.completion.CompletionRequest;
 import com.theokanning.openai.image.CreateImageRequest;
+import lombok.Getter;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -26,7 +27,11 @@ import java.util.List;
 
 class Main
 {
+    @Getter
     private static JSONObject supplierObject = new JSONObject();
+    @Getter
+    private static JSONObject JobObject = new JSONObject();
+
     private String TOKEN = "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";
 
     public static void main(String... args) throws InterruptedException
@@ -41,14 +46,17 @@ class Main
 //        answer = client.ask("remember what i send you now !");
 //        String chatGPT_Prompt = workingHours(jsonObject);
 
-        JSONObject promtObject = createObject(jsonObject);
-        String[] chatGPT_Prompt = createPromt(promtObject);
-        for(int i = 0; i < chatGPT_Prompt.length; i++)
-        {
-            System.out.println(chatGPT_Prompt[i]);
+        assert jsonObject != null;
+        createObject(jsonObject);
+        createJobObject(jsonObject);
+        String[] chatGPT_Prompt = createPromt(supplierObject);
+        for (String s : chatGPT_Prompt) {
+            System.out.println(s);
         }
 
-        System.out.println(promtObject.toJSONString());
+        System.out.println(supplierObject.toJSONString());
+        System.out.println(JobObject.toJSONString());
+
     }
 
     private static String[] createPromt(JSONObject promtObject) {
@@ -61,19 +69,17 @@ class Main
             JSONArray skills = (JSONArray) jsonObject.get("Skills");
             JSONArray timeFrame = (JSONArray) jsonObject.get("WorkingHour");
             StringBuilder prompt = new StringBuilder();
-            prompt.append("Supplier: " + jsonObject.get("SupplierID") + "\n");
+            prompt.append("Supplier: ").append(jsonObject.get("SupplierID")).append("\n");
             // ADD Location
-            prompt.append("Lat:" + jsonObject.get("Lat") + ", Lon:" + jsonObject.get("Lon") + "\n");
+            prompt.append("Lat:").append(jsonObject.get("Lat")).append(", Lon:").append(jsonObject.get("Lon")).append("\n");
 //            // ADD Skills
             prompt.append("Skills:");
             int count = 0;
-            for (int j = 0; j < skills.size(); j++)
-            {
-                if(count < 6)
-                {
-                    JSONObject skill = (JSONObject) skills.get(j);
-                    prompt.append("\n  Skill Name: "+skill.get("Skill_NAME") + " -");
-                    prompt.append("Skill Level: "+skill.get("Skill_LEVEL") + "");
+            for (Object o : skills) {
+                if (count < 6) {
+                    JSONObject skill = (JSONObject) o;
+                    prompt.append("\n  Skill Name: ").append(skill.get("Skill_NAME")).append(" -");
+                    prompt.append("Skill Level: ").append(skill.get("Skill_LEVEL"));
                     count++;
                 }
             }
@@ -81,14 +87,13 @@ class Main
             // ADD TimeFrame
             prompt.append("WorkingHour:");
             count = 0;
-            for (int j = 0; j < timeFrame.size(); j++)
-            {
-                if (count < 6){
-                    JSONObject time = (JSONObject) timeFrame.get(j);
-                    prompt.append("\n  Start Date: "+time.get("Working_StartDate") + "\n");
-                    prompt.append("  End Date: "+time.get("Working_EndDate") + "\n");
-                    prompt.append("  Start Time: "+time.get("Working_StartTime") + "\n");
-                    prompt.append("  End Time: "+time.get("Working_EndTime") + "");
+            for (Object o : timeFrame) {
+                if (count < 6) {
+                    JSONObject time = (JSONObject) o;
+                    prompt.append("\n  Start Date: ").append(time.get("Working_StartDate")).append("\n");
+                    prompt.append("  End Date: ").append(time.get("Working_EndDate")).append("\n");
+                    prompt.append("  Start Time: ").append(time.get("Working_StartTime")).append("\n");
+                    prompt.append("  End Time: ").append(time.get("Working_EndTime"));
                     count++;
                 }
             }
@@ -97,13 +102,52 @@ class Main
 
         return prompts;
     }
+    private static void createJobObject(JSONObject jsonObject) {
+        getJobObject().put("Jobs", new JSONArray());
+        JSONArray array = (JSONArray) getJobObject().get("Jobs");
+        JSONArray jsonArray = (JSONArray) jsonObject.get("IT_REQUISITIONER");
+        for (int i = 0; i < 6; i++)
+        {
+            JSONObject jsonObject1 = (JSONObject) jsonArray.get(i);
+            JSONObject job = new JSONObject();
 
-    private static JSONObject createObject(JSONObject jsonObject) {
+            job.put("Job_Id", jsonObject1.get("ID"));
+            job.put("Start_Date", jsonObject1.get("PREDEFINED_START_DATE"));
+            job.put("End_Date", jsonObject1.get("PREDEFINED_END_DATE"));
+            job.put("Lon", jsonObject1.get("LONGITUDE"));
+            job.put("Lat", jsonObject1.get("LATITUDE"));
+            job.put("Skills", new JSONArray());
+            array.add(job);
+        }
+        getJobObject().put("Jobs", array);
+
+        //ADD SkillGroup
+        jsonArray = (JSONArray) jsonObject.get("IT_REQUIRED_HARDSKILLGROUP");
+        for (Object o : jsonArray){
+            for (int j = 0; j < array.size(); j++) {
+                JSONObject jsonObject1 = (JSONObject) o;
+                JSONObject job = (JSONObject) array.get(j);
+                if (jsonObject1.get("ID").equals(job.get("Job_Id"))) {
+                    JSONArray skills = (JSONArray) job.get("Skills");
+                    JSONObject skillObject = new JSONObject();
+
+                    if (skills.size() < 6) {
+
+                        skillObject.put("Skill_NAME", jsonObject1.get("SKILL_NAME"));
+                        skills.add(skillObject);
+                        job.put("Skills", skills);
+                        array.set(j, job);
+                    }
+                }
+            }
+        }
+    }
+    private static void createObject(JSONObject jsonObject) {
         //Add Supplier
         getSupplierObject().put("Suppliers", new JSONArray());
         JSONArray array = (JSONArray) getSupplierObject().get("Suppliers");
         JSONArray jsonArray = (JSONArray) jsonObject.get("IT_SUPPLIER");
-        for (int i = 0; i < jsonArray.size(); i++)
+        for (int i = 10; i < 16; i++)
         {
             JSONObject jsonObject1 = (JSONObject) jsonArray.get(i);
             JSONObject supplier = new JSONObject();
@@ -119,16 +163,13 @@ class Main
 
         //ADD TimeFrame
         jsonArray = (JSONArray) jsonObject.get("IT_SUPPLIED_TIMEFRAMEGROUP");
-        for (int i = 0; i < jsonArray.size(); i++)
-        {
-            for(int j = 0; j < array.size(); j++)
-            {
-                JSONObject jsonObject1 = (JSONObject) jsonArray.get(i);
+        for (Object o : jsonArray) {
+            for (int j = 0; j < array.size(); j++) {
+                JSONObject jsonObject1 = (JSONObject) o;
                 JSONObject supplier = (JSONObject) array.get(j);
-                if(jsonObject1.get("ID_REF").equals(supplier.get("SupplierID")))
-                {
+                if (jsonObject1.get("ID_REF").equals(supplier.get("SupplierID"))) {
                     JSONArray timeFrame = (JSONArray) supplier.get("WorkingHour");
-                    if (timeFrame.size() < 6){
+                    if (timeFrame.size() < 6) {
                         JSONObject timeFrameObject = new JSONObject();
                         timeFrameObject.put("Working_StartDate", jsonObject1.get("START_DATE"));
                         timeFrameObject.put("Working_EndDate", jsonObject1.get("END_DATE"));
@@ -145,34 +186,27 @@ class Main
 
         //ADD SkillGroup
         jsonArray = (JSONArray) jsonObject.get("IT_SUPPLIED_SKILLGROUP");
-        for (int i = 0; i < jsonArray.size(); i++)
-        {
-            for(int j = 0; j < array.size(); j++)
-            {
-                JSONObject jsonObject1 = (JSONObject) jsonArray.get(i);
+        for (Object o : jsonArray) {
+            for (int j = 0; j < array.size(); j++) {
+                JSONObject jsonObject1 = (JSONObject) o;
                 JSONObject supplier = (JSONObject) array.get(j);
-                if(jsonObject1.get("ID_REF").equals(supplier.get("SupplierID")))
-                {
+                if (jsonObject1.get("ID_REF").equals(supplier.get("SupplierID"))) {
                     JSONArray skills = (JSONArray) supplier.get("Skills");
                     JSONObject skillObject = new JSONObject();
 
-                    if(skills.size() < 6){
+                    if (skills.size() < 6) {
 
-                    skillObject.put("Skill_NAME", jsonObject1.get("SKILL_NAME"));
-                    skillObject.put("Skill_LEVEL", jsonObject1.get("SKILL_LEVEL"));
-                    skills.add(skillObject);
-                    supplier.put("Skills", skills);
-                    array.set(j, supplier);
+                        skillObject.put("Skill_NAME", jsonObject1.get("SKILL_NAME"));
+                        skillObject.put("Skill_LEVEL", jsonObject1.get("SKILL_LEVEL"));
+                        skills.add(skillObject);
+                        supplier.put("Skills", skills);
+                        array.set(j, supplier);
                     }
                 }
             }
         }
-        return getSupplierObject();
     }
 
-    public static JSONObject getSupplierObject() {
-        return supplierObject;
-    }
     private static String getItSupplier(JSONObject jsonObject)
     {
         StringBuilder suppliers = new StringBuilder("{ \\\"Supplier\\\": [{\" ");
@@ -196,18 +230,18 @@ class Main
                 if (skillGroupPrompt.equals(prompt))
                 {
                     if (skill == null){
-                        suppliers.append("\n\"" + jsonObject2.get("SKILL_NAME") + "\"");
+                        suppliers.append("\n\"").append(jsonObject2.get("SKILL_NAME")).append("\"");
                         System.out.print("\n\"" + jsonObject2.get("SKILL_NAME") + "\"");
                         skill = "\"Skill\": \"" + jsonObject2.get("SKILL_NAME") + "\"";
                     }else{
-                        suppliers.append(",\n\"" + jsonObject2.get("SKILL_NAME") + "\"");
+                        suppliers.append(",\n\"").append(jsonObject2.get("SKILL_NAME")).append("\"");
                         System.out.println(",");
                         System.out.print("\"" + jsonObject2.get("SKILL_NAME") + "\"");
                         //                      System.out.println("Skill Level: " + jsonObject2.get("SKILL_LEVEL"));
                 }
                 }
             }
-            suppliers.append("],\"Person\": \"" + prompt + "\", \"Lat\":\"" + lat+ "\", \"Lon\":\"" + lon+ "\"");
+            suppliers.append("],\"Person\": \"").append(prompt).append("\", \"Lat\":\"").append(lat).append("\", \"Lon\":\"").append(lon).append("\"");
             System.out.println("],");
             System.out.println("\"Person\": \"" + prompt + "\",");
             System.out.println("\"Lat\":\"" + lat+ "\",");
@@ -227,6 +261,9 @@ class Main
     return suppliers.toString();
     }
 
+    public static void setJobObject(JSONObject jobObject) {
+        JobObject = jobObject;
+    }
 
 
     private void openAiChat(String token)
