@@ -1,0 +1,119 @@
+{
+  "workers": [
+    {
+      "worker_id": "P.05448382",
+      "matching_job": null,
+      "skills": [
+        {
+          "skill_id": "0000050001311",
+          "skill_level": 1
+        },
+        {
+          "skill_id": "0000050001313",
+          "skill_level": 1
+        }
+      ],
+      "date_and_time": "2023-03-07T12:30:00Z"
+    },
+    {
+      "worker_id": "P.05455606",
+      "matching_job": "COP.000507043960.0020",
+      "skills": [
+        {
+          "skill_id": "0000050001311",
+          "skill_level": 1
+        }
+      ],
+      "date_and_time": "2023-03-07T12:30:00Z"
+    },
+    {
+      "worker_id": "P.05459442",
+      "matching_job": [
+        "COP.000507076635.0010",
+        "COP.000507076635.0020",
+        "COP.000507076638.0010",
+        "COP.000507076638.0020"
+      ],
+      "skills": [
+        {
+          "skill_id": "0000050001311",
+          "skill_level": 1
+        },
+        {
+          "skill_id": "0000050001313",
+          "skill_level": 1
+        },
+        {
+          "skill_id": "0000050001145",
+          "skill_level": 1
+        },
+        {
+          "skill_id": "0000050001154",
+          "skill_level": 1
+        },
+        {
+          "skill_id": "0000050001155",
+          "skill_level": 1
+        },
+        {
+          "skill_id": "0000050001160",
+          "skill_level": 1
+        }
+      ],
+      "date_and_time": "2023-03-07T12:30:00Z"
+    },
+    {
+      "worker_id": "P.05481410",
+      "matching_job": "COP.000507043960.0010",
+      "skills": [
+        {
+          "skill_id": "0000050001311",
+          "skill_level": 1
+        },
+        {
+          "skill_id": "0000050001313",
+          "skill_level": 1
+        },
+        {
+          "skill_id": "0000050001315",
+          "skill_level": 1
+        },
+        {
+          "skill_id": "0000050011446",
+          "skill_level": 1
+        },
+        {
+          "skill_id": "0000050017751",
+          "skill_level": 1
+        }
+      ],
+      "date_and_time": "2023-03-07T12:30:00Z"
+    },
+    {
+      "worker_id": "P.05494306",
+      "matching_job": null,
+      "skills": [
+        {
+          "skill_id": "0000050001311",
+          "skill_level": 1
+        }
+      ],
+      "date_and_time": "2023-03-07T12:30:00Z"
+    },
+    {
+      "worker_id": "P.05503749",
+      "matching_job": null,
+      "skills": [
+        {
+          "skill_id": "0000050001311",
+          "skill_level": 1
+        },
+        {
+          "skill_id": "0000050001313",
+          "skill_level": 1
+        }
+      ],
+      "date_and_time": "2023-03-07T12:30:00Z"
+    }
+  ]
+}
