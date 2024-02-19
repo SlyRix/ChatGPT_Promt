@@ -33,9 +33,6 @@ class MainGAI {
     public static void main(String... args) throws Exception {
         inits3();
         JSONObject jsonObject = getJson("request-test4");
-
-
-
 //        String[] chatGPT_Prompt = createPromt(supplierObject);
 
 //        for (String s : chatGPT_Prompt) {
@@ -137,7 +134,6 @@ class MainGAI {
         return array;
     }
 
-
     private static JSONArray createObject(JSONObject jsonObject) {
         //Add Supplier
         getSupplierObject().put("Suppliers", new JSONArray());
@@ -173,8 +169,6 @@ class MainGAI {
                     timeFrame.add(timeFrameObject);
                     supplier.put("Working_Hours", timeFrame);
                     array.set(j, supplier);
-
-
                 }
             }
         }
@@ -195,7 +189,6 @@ class MainGAI {
                     skills.add(skillObject);
                     supplier.put("Skills", skills);
                     array.set(j, supplier);
-
                 }
             }
         }
